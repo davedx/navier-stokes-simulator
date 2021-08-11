@@ -13,7 +13,7 @@
 #include "types.h"
 
 GLfloat light_diffuse[] = {1.0, 0.0, 0.0, 1.0};  /* Red diffuse light. */
-GLfloat light_position[] = {1.0, 1.0, 1.0, 0.0};  /* Infinite light location. */
+GLfloat light_position[] = {1.0, 1.0, 1.0, 1.0};  /* Infinite light location. */
 GLfloat n[6][3] = {  /* Normals for the 6 faces of a cube. */
   {-1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {1.0, 0.0, 0.0},
   {0.0, -1.0, 0.0}, {0.0, 0.0, 1.0}, {0.0, 0.0, -1.0} };
@@ -26,8 +26,7 @@ void (*__updateFunc)(float);
 
 SimState* __simState = NULL;
 
-void
-drawBox(void)
+void drawBox(void)
 {
   int i;
 
@@ -58,25 +57,19 @@ display(void)
   glRotatef(90, 1.0, 0.0, 0.0);
 
   if (__simState) {
-    // Render the vehicle
+    // Render particles
+    for (int i=0; i<NUM_PARTICLES; i++) {
+      glPushMatrix();
+      glTranslatef(__simState->particle[i].pos.x, -1, __simState->particle[i].pos.y);
+      glScalef(0.1f, 0.1f, 0.1f);
+      drawBox();
+      glPopMatrix();
+    }
+    // Render "airfoil"
     glPushMatrix();
-    glTranslatef(__simState->vehicle.position.x, -1, __simState->vehicle.position.y);
-    drawBox();
-    glPopMatrix();
-
-    // Render the target
-    glPushMatrix();
-    glTranslatef(__simState->target.x, -1, __simState->target.y);
-    glScalef(0.5f, 0.5f, 0.5f);
-    drawBox();
-    glPopMatrix();
-
-    // Render the vehicle acceleration as a point (an arrow would be better)
-    glPushMatrix();
-    float ax = __simState->vehicle.position.x + __simState->vehicle.acceleration.x;
-    float ay = __simState->vehicle.position.y + __simState->vehicle.acceleration.y;
-    glTranslatef(ax, -1, ay);
-    glScalef(0.2f, 0.2f, 0.2f);
+    glTranslatef(0, -1.f, 0);
+    glScalef(3.f, 1.f, 3.f);
+    glRotatef(45, 0, 1, 0);
     drawBox();
     glPopMatrix();
   }
