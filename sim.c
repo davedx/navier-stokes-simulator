@@ -75,14 +75,9 @@ void moveParticle(Particle* P, float dt) {
       // printf("Points: %.2f,%.2f - %.2f,%.2f Normal: %.2f,%.2f\n", AF[i].x,AF[i].y, AF[i+1 % 4].x,AF[i+1 % 4].y, norm.x,norm.y);
       getDeflected(&P->vel, &norm, &vel);
       // printf("Deflected vector: %.2f,%.2f\n", vel.x,vel.y);
-      // TODO: recalculate newPos
-      // printf("%.2f, %.2f\n", X.x, X.y);
-      // normal is (-dy, dx), (dy, -dx)
-      // Vec2 norm;
-      // float NAx = AF[i].x
-      // norm.x = AF[i].x
-      P->vel.x = vel.x; // -P->vel.x;
-      P->vel.y = vel.y; //-P->vel.y;
+      // TODO: recalculate newPos properly
+      P->vel.x = vel.x;
+      P->vel.y = vel.y;
       newPos.x = P->pos.x + P->vel.x * dt;
       newPos.y = P->pos.y + P->vel.y * dt;
       break;
