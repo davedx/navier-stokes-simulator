@@ -66,9 +66,10 @@ display(void)
       glPopMatrix();
     }
     // Render "airfoil"
+    float scale = 3.5f;
     glPushMatrix();
     glTranslatef(0, -1.f, 0);
-    glScalef(3.f, 1.f, 3.f);
+    glScalef(5.f, 1.f, 2.5f);
     glRotatef(45, 0, 1, 0);
     drawBox();
     glPopMatrix();

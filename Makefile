@@ -1,11 +1,14 @@
-sim: sim.o renderer.o util.o collision.o
-	clang -o sim sim.o collision.o renderer.o util.o -framework GLUT -framework OpenGL -framework Cocoa
+sim: sim.o renderer.o util.o collision.o chemistry.o
+	clang -o sim sim.o collision.o chemistry.o renderer.o util.o -framework GLUT -framework OpenGL -framework Cocoa
 
 renderer.o: renderer.c
 	clang -c renderer.c
 
 collision.o: collision.c
 	clang -c collision.c
+
+chemistry.o: chemistry.c
+	clang -c chemistry.c
 
 util.o: util.c
 	clang -c util.c

@@ -7,6 +7,7 @@
 #include "util.h"
 #include "types.h"
 #include "collision.h"
+#include "chemistry.h"
 
 SimState simState;
 
@@ -33,6 +34,25 @@ void getNormal(Vec2* A, Vec2* B, Vec2* out) {
   float mag = getMag(out);
   out->x /= mag;
   out->y /= mag;
+}
+
+void testGetNormal() {
+  Vec2 a, b, out;
+  a.x = 0;
+  a.y = 0;
+  b.x = 1;
+  b.y = 0;
+  getNormal(&a, &b, &out);
+  c_assert(out.x == 0);
+  c_assert(out.y == -1.f);
+  a.x = 1.f;
+  a.y = 1.f;
+  b.x = 0;
+  b.y = 0;
+  getNormal(&a, &b, &out);
+  printf("%.2f %.2f\n", out.x, out.y);
+  c_assert(out.x == -0.5f);
+  c_assert(out.y == 0.5f);
 }
 
 float getDotProduct(Vec2* A, Vec2* B) {
@@ -98,10 +118,6 @@ void update(float dt) {
 
   if (logTimer < 0) {
     logTimer = LOG_FREQUENCY;
-    // printf("Vehicle accel %.2f,%.2f vel %.2f,%.2f pos %.2f,%.2f\n",
-    //   simState.vehicle.acceleration.x, simState.vehicle.acceleration.y,
-    //   simState.vehicle.velocity.x, simState.vehicle.velocity.y,
-    //   simState.vehicle.position.x, simState.vehicle.position.y);
   }
 
   Vec2 pos;
@@ -126,14 +142,15 @@ int main (int argc, char **argv) {
   //   0
   //  3 1
   //   2
-  float LEN = 5.f;
+  float WIDTH = 5.f;
+  float HEIGHT = 2.5f;
   AF[0].x = 0;
-  AF[0].y = -LEN;
-  AF[1].x = LEN;
+  AF[0].y = -HEIGHT;
+  AF[1].x = WIDTH;
   AF[1].y = 0;
   AF[2].x = 0;
-  AF[2].y = LEN;
-  AF[3].x = -LEN;
+  AF[2].y = HEIGHT;
+  AF[3].x = -WIDTH;
   AF[3].y = 0;
   generateGas();
 
@@ -143,6 +160,19 @@ int main (int argc, char **argv) {
   getNormal(&AF[1], &AF[2], &test);
   // printf("Normal of %.2f,%.2f %.2f,%.2f = %.2f,%.2f\n", AF[1].x, AF[1].y, AF[2].x, AF[2].y, test.x, test.y);
   // testLineSegmentIntersection();
-  initRenderer(argc, argv, update, &simState);
+  // testGetNormal();
+  // initRenderer(argc, argv, update, &simState);
+  Vec2 loc, force;
+  loc.x = 0; loc.y = 0;
+  force.x = 0; force.y = 0;
+  initChemistry();
+  getLennardJonesForce(&simState, &loc, &force);
+  printf("LJ force at %.3f, %.3f: %.15f, %.15f\n", loc.x, loc.y, force.x, force.y);
+  loc.x = -51.f; loc.y = -51.f;
+  getLennardJonesForce(&simState, &loc, &force);
+  printf("LJ force at %.3f, %.3f: %.15f, %.15f\n", loc.x, loc.y, force.x, force.y);
+  loc.x = 51.f; loc.y = 51.f;
+  getLennardJonesForce(&simState, &loc, &force);
+  printf("LJ force at %.3f, %.3f: %.15f, %.15f\n", loc.x, loc.y, force.x, force.y);
 }
 
