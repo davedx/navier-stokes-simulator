@@ -2,6 +2,7 @@
 
 #define OK 0
 #define ERROR -1
+#define EPSILON 0.000001f
 
 #define NUM_PARTICLES 10000
 

@@ -34,35 +34,8 @@ int lineSegmentIntersection(LineSegment2* A, LineSegment2* B, Vec2* out) {
   }
 
   // p + r * t
-  // printf("t = %.3f, r.x = %.3f, r.y = %.3f\n", t, r.x, r.y);
   out->x = A->from.x + r.x * t;
   out->y = A->from.y + r.y * t;
 
   return OK;
-}
-
-void testLineSegmentIntersection() {
-  Vec2 out;
-  LineSegment2 A, B;
-  
-  A.from.x = 0; A.from.y = 0;
-  A.to.x = 10; A.to.y = 0;
-  B.from.x = 0; B.from.y = 1;
-  B.to.x = 10; B.to.y = 1;
-  c_assert(lineSegmentIntersection(&A, &B, &out) == ERROR);
-  A.from.x = -1; A.from.y = -1;
-  A.to.x = 1; A.to.y = 1;
-  B.from.x = -1; B.from.y = 1;
-  B.to.x = 1; B.to.y = -1;
-  c_assert(lineSegmentIntersection(&A, &B, &out) != ERROR);
-  c_assert(out.x == 0);
-  c_assert(out.y == 0);
-  A.from.x = -1; A.from.y = -1;
-  A.to.x = 1; A.to.y = 1;
-  B.from.x = 0.9f; B.from.y = 1;
-  B.to.x = 3.5f; B.to.y = -1;
-  c_assert(lineSegmentIntersection(&A, &B, &out) != ERROR);
-  printf("%f,%f\n", out.x, out.y);
-  c_assert(out.x == 0.956522);
-  c_assert(out.y == 0.956522);
 }

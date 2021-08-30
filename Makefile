@@ -15,3 +15,9 @@ util.o: util.c
 
 sim.o: sim.c macros.h renderer.h
 	clang -c sim.c
+
+tests: tests.o chemistry.o util.o collision.o
+	clang -o tests tests.o chemistry.o util.o collision.o
+
+tests.o: tests.c
+	clang -c tests.c

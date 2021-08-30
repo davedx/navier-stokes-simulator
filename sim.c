@@ -1,5 +1,4 @@
 #include <unistd.h>
-#include <stdlib.h>
 #include <math.h>
 
 #include "macros.h"
@@ -17,47 +16,6 @@ float logTimer = LOG_FREQUENCY;
 
 // HACK! this should derive from the airfoil geometry
 Vec2 AF[4];//A, afB, afC, afD;
-
-float getMag(Vec2* A) {
-  return sqrt(A->x * A->x + A->y * A->y);
-}
-
-void getNormal(Vec2* A, Vec2* B, Vec2* out) {
-  float dx = B->x - A->x;
-  float dy = B->y - A->y;
-  float N1x = -dy;
-  float N1y = dx;
-  float N2x = dy;
-  float N2y = -dx;
-  out->x = N2x - N1x;
-  out->y = N2y - N1y;
-  float mag = getMag(out);
-  out->x /= mag;
-  out->y /= mag;
-}
-
-void testGetNormal() {
-  Vec2 a, b, out;
-  a.x = 0;
-  a.y = 0;
-  b.x = 1;
-  b.y = 0;
-  getNormal(&a, &b, &out);
-  c_assert(out.x == 0);
-  c_assert(out.y == -1.f);
-  a.x = 1.f;
-  a.y = 1.f;
-  b.x = 0;
-  b.y = 0;
-  getNormal(&a, &b, &out);
-  printf("%.2f %.2f\n", out.x, out.y);
-  c_assert(out.x == -0.5f);
-  c_assert(out.y == 0.5f);
-}
-
-float getDotProduct(Vec2* A, Vec2* B) {
-  return A->x * B->x + A->y * B->y;
-}
 
 void getDeflected(Vec2* A, Vec2* N, Vec2* out) {
   float dotProduct = getDotProduct(A, N);
@@ -126,15 +84,6 @@ void update(float dt) {
   }
 }
 
-void generateGas() {
-  for (int i=0; i<NUM_PARTICLES; i++) {
-    simState.particle[i].pos.x = (rand1() * 100.f) - 50.f;
-    simState.particle[i].pos.y = (rand1() * 100.f) - 50.f;
-    simState.particle[i].vel.x = 2.f; // from wind
-    simState.particle[i].vel.y = 0.f; // from wind
-  }
-}
-
 int main (int argc, char **argv) {
   seedRand();
 
@@ -152,27 +101,11 @@ int main (int argc, char **argv) {
   AF[2].y = HEIGHT;
   AF[3].x = -WIDTH;
   AF[3].y = 0;
-  generateGas();
-
-  simState.wind.x = 10.f;
-
-  Vec2 test;
-  getNormal(&AF[1], &AF[2], &test);
-  // printf("Normal of %.2f,%.2f %.2f,%.2f = %.2f,%.2f\n", AF[1].x, AF[1].y, AF[2].x, AF[2].y, test.x, test.y);
-  // testLineSegmentIntersection();
-  // testGetNormal();
-  // initRenderer(argc, argv, update, &simState);
-  Vec2 loc, force;
-  loc.x = 0; loc.y = 0;
-  force.x = 0; force.y = 0;
+  Vec2 wind;
+  wind.x = 2.f;
+  wind.y = 0;
+  generateGas(&simState, &wind);
   initChemistry();
-  getLennardJonesForce(&simState, &loc, &force);
-  printf("LJ force at %.3f, %.3f: %.15f, %.15f\n", loc.x, loc.y, force.x, force.y);
-  loc.x = -51.f; loc.y = -51.f;
-  getLennardJonesForce(&simState, &loc, &force);
-  printf("LJ force at %.3f, %.3f: %.15f, %.15f\n", loc.x, loc.y, force.x, force.y);
-  loc.x = 51.f; loc.y = 51.f;
-  getLennardJonesForce(&simState, &loc, &force);
-  printf("LJ force at %.3f, %.3f: %.15f, %.15f\n", loc.x, loc.y, force.x, force.y);
+  initRenderer(argc, argv, update, &simState);
 }
 

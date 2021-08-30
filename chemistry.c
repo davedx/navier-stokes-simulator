@@ -1,5 +1,6 @@
 #include <math.h>
 #include "types.h"
+#include "util.h"
 
 float ONE_ANGSTROM;
 float AIR_PARTICLE_SIZE;
@@ -15,6 +16,15 @@ void initChemistry() {
   AIR_DISPERSION_ENERGY_BY_BOLTZMANN_CONSTANT = AIR_DISPERSION_ENERGY / BOLTZMANN_CONSTANT;
 }
 
+void generateGas(SimState* simState, Vec2* velocity) {
+  for (int i=0; i<NUM_PARTICLES; i++) {
+    simState->particle[i].pos.x = (rand1() * 100.f) - 50.f;
+    simState->particle[i].pos.y = (rand1() * 100.f) - 50.f;
+    simState->particle[i].vel.x = velocity->x;
+    simState->particle[i].vel.y = velocity->y;
+  }
+}
+
 // Calculate Lennard-Jones force at a position `pos` in the simulation of particles
 void getLennardJonesForce(SimState* sim, Vec2* pos, Vec2* out) {
   float dx, dy, dist, LJFmag;
@@ -24,6 +34,9 @@ void getLennardJonesForce(SimState* sim, Vec2* pos, Vec2* out) {
     dy = (sim->particle[i].pos.y - pos->y) / 1000.f; // convert cm to m
     // calculate distance from `pos` to this particle
     dist = sqrt(dx * dx + dy * dy);
+    if (dist == 0) {
+      dist = EPSILON; // TODO: unit test
+    }
     // calculate the Lennard-Jones potential for this distance with LJ parameters for air molecules
     LJFmag = 4.f * AIR_DISPERSION_ENERGY_BY_BOLTZMANN_CONSTANT * (pow(AIR_PARTICLE_SIZE / dist, 12) - pow(AIR_PARTICLE_SIZE / dist, 6));
     // normalize the distance vector

@@ -1,5 +1,7 @@
+#pragma once
 #include <stdio.h>
 #include <math.h>
+#include "types.h"
 
 #define tst_debugging printf
 
@@ -8,7 +10,10 @@
 
 #define c_assert(e) ((e) ? (true) : (tst_debugging("%s, %d: assertion ’%s’ failed\n", __FILE__, __LINE__, #e), false))
 
-#define c_assert_float(v, min, max) \
+#define c_assert_float(a, e) \
+  ((fabsf(a - e) < EPSILON) ? (true) : (tst_debugging("%s, %d: assertion failed, expected: %f, actual: %f\n", __FILE__, __LINE__, e, a), false))
+
+#define c_assert_float_range(v, min, max) \
   (c_assert(!isnan(v) && v > min && v < max ))
 
 #define c_assert_vec2(v, min, max) \
